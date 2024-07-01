@@ -1,0 +1,4 @@
+remote: '127.0.0.1'
+db: 'sqlite'
+portweb: 5000
+debug: false
