@@ -4,9 +4,10 @@ __  WebPanel   _____/___/_______ _______ ______
 \_____\    \/\/    /   /       /  __   /   ___/
    \___\          /   /   /   /  /_/  /___   /
         \___/\___/___/___/___/___    /______/
-                            /_______/ 0.0.1
+                            /_______/ 0.0.3
 ''')
 import db
+import yml
 import listen
 
 
@@ -20,4 +21,4 @@ import listen
 
 
 
-listen.run(debug=False)
+listen.run(debug=yml.debug,port=yml.port)
