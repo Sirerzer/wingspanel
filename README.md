@@ -2,6 +2,7 @@
 | -------| ------- | --------- |
 | v0.0.1 | Windows |  :x:      |
 | v0.0.1 | Debian  |  ✅  |
+--------------------------------
 to do list:
 Sécurité with token
 Proxy nodes 
