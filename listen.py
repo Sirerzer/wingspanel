@@ -8,7 +8,7 @@ from flask_cors import CORS
 import io
 import tarfile
 from functools import wraps
-import yml
+from yml import token
 
 
 app = Flask(__name__)
@@ -18,7 +18,8 @@ log.setLevel(logging.WARNING)
 def get_container_status(container_id):
     container = client.containers.get(container_id)
     return container.status
-ACCESS_TOKEN = yml.ACCESS_TOKEN
+ACCESS_TOKEN = token
+
 CORS(app)  
 
 def token_required(f):
@@ -59,7 +60,7 @@ def create_server():
         container = client.containers.run(
             image_name, 
             detach=True, 
-            ports={f'{port}/tcp': (host_ip, port)}, 
+            ports={f'{port}/tcp': (host_ip, port)},  # Utilisation de host_ip dans les ports
         )
 
     
@@ -213,7 +214,7 @@ def archive_files(uuid):
     except Exception as e:
         return jsonify({'message': 'Erreur lors de la création de l\'archive', 'error': str(e)}), 500
     
-    
+
 @app.route('/server/<uuid>/create_directory', methods=['POST'])
 @token_required
 def create_directory(uuid):
