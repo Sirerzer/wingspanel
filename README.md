@@ -12,3 +12,6 @@ Mode 2:
 Proxy mode with ndd (auto create with acces to dns)
 Mode 3:
 Mode 1 and 2 merged 
+
+
+files
