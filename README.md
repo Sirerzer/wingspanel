@@ -1,6 +1,3 @@
-Sure, I can help upgrade your `README.md` file for the "Wings" project. Here's an improved version incorporating the provided details and structuring the content for clarity.
-
----
 
 # Wings
 
@@ -72,4 +69,3 @@ For any questions or feedback, please open an issue in the [GitHub repository](h
 
 ---
 
-This README includes sections for features, installation, usage, contributing, and licensing, providing a comprehensive guide for users and contributors.
