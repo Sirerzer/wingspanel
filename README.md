@@ -37,7 +37,6 @@ Clone the repository and install the required packages:
 ```bash
 git clone https://github.com/Sirerzer/wings.git
 cd wings
-pip install -r requirements.txt
 ```
 
 ### Usage
