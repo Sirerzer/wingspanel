@@ -1,10 +1,5 @@
-| version | OS | Compatible |
-| -------| ------- | --------- |
-| v0.0.1 | Windows |  :x:      |
-| v0.0.1 | Debian  |  ✅  |
---------------------------------
+[![Python package](https://github.com/Sirerzer/wings/actions/workflows/python-app.yml/badge.svg?branch=main)](https://github.com/Sirerzer/wings/actions/workflows/python-app.yml)
 to do list:
-Sécurité with token
 Proxy nodes 
 Modes 1:
 Only a classique nodes gestion of serveur
