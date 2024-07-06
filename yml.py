@@ -12,7 +12,7 @@ try:
             # Récupération des personnes
             port = config["port"]
             debug = config["debug"]
-            ACCESS_TOKEN = config["token"]
+            token = config["token"]
             remote = config["remote"]
             # Lecture des personnes une à une
             current_time = datetime.now().strftime('%H:%M:%S')
@@ -20,6 +20,10 @@ try:
         except yaml.YAMLError as ex:
             print("YAML FILE HAS SYNTAX ERROR :")
             print(ex)
+            port = ''
+            debug = ''
+            token = ''
+            remote = ''
 except FileNotFoundError:
     print('''
               -------------------------------------------------------------------------------
@@ -29,9 +33,9 @@ except FileNotFoundError:
     ''')
     port = ''
     debug = ''
-    ACCESS_TOKEN = ''
+    token = ''
     remote = ''
-def test():
+def test_yml():
     current_time = datetime.now().strftime('%H:%M:%S')
     print(f"[{current_time}] load the config")
     try:
@@ -42,7 +46,7 @@ def test():
                 # Récupération des personnes
                 port = config["port"]
                 debug = config["debug"]
-                ACCESS_TOKEN = config["token"]
+                token = config["token"]
                 remote = config["remote"]
                 # Lecture des personnes une à une
                 current_time = datetime.now().strftime('%H:%M:%S')
@@ -61,4 +65,3 @@ def test():
         debug = ''
         ACCESS_TOKEN = ''
         remote = ''
-    

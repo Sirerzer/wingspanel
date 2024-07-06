@@ -8,7 +8,7 @@ from flask_cors import CORS
 import io
 import tarfile
 from functools import wraps
-import yml
+from yml import token
 
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ log.setLevel(logging.WARNING)
 def get_container_status(container_id):
     container = client.containers.get(container_id)
     return container.status
-ACCESS_TOKEN = yml.ACCESS_TOKEN
+ACCESS_TOKEN = token
 
 CORS(app)  
 
