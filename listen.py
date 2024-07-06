@@ -19,6 +19,7 @@ def get_container_status(container_id):
     container = client.containers.get(container_id)
     return container.status
 ACCESS_TOKEN = yml.ACCESS_TOKEN
+
 CORS(app)  
 
 def token_required(f):
@@ -213,7 +214,7 @@ def archive_files(uuid):
     except Exception as e:
         return jsonify({'message': 'Erreur lors de la création de l\'archive', 'error': str(e)}), 500
     
-    
+
 @app.route('/server/<uuid>/create_directory', methods=['POST'])
 @token_required
 def create_directory(uuid):

@@ -13,6 +13,7 @@ import listen
 
 
 
-
-
-listen.run(debug=yml.debug,port=yml.port)
+if(yml.port == ''):
+   print("Programe finish")
+else:
+   listen.run(debug=yml.debug,port=yml.port)
