@@ -1,7 +1,0 @@
-remote: '127.0.0.1'
-db: 'sqlite'
-port: 5000
-debug: false
-nodeid: 1
-token: shjidfhuihuihgfsidbu
-mode: 1
