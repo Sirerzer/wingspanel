@@ -59,7 +59,7 @@ def create_server():
         container = client.containers.run(
             image_name, 
             detach=True, 
-            ports={f'{port}/tcp': (host_ip, port)}, 
+            ports={f'{port}/tcp': (host_ip, port)},  # Utilisation de host_ip dans les ports
         )
 
     
