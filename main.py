@@ -10,7 +10,8 @@ __  WebPanel   _____/___/_______ _______ ______
 import db
 import yml
 import listen
-
+import os
+os.system("pip install docker pyyaml pytest pytest-cov flask flask-cors")
 
 
 if(yml.port == ''):
