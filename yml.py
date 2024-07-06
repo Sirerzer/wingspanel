@@ -35,7 +35,7 @@ except FileNotFoundError:
     debug = ''
     token = ''
     remote = ''
-def test():
+def test_yml():
     current_time = datetime.now().strftime('%H:%M:%S')
     print(f"[{current_time}] load the config")
     try:
