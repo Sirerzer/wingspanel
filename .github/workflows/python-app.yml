@@ -11,6 +11,8 @@ jobs:
         python-version: [ "3.9", "3.10", "3.11", "3.12"]
 
     steps:
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
