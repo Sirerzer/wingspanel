@@ -1,3 +1,3 @@
 import yml
-var = yml.load()
+var = yml.test()
 print(vars(var))

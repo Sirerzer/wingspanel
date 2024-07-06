@@ -11,7 +11,7 @@ import db
 import yml
 import listen
 
-
+yml.load
 
 
 if(yml.port == ''):
