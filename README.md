@@ -22,7 +22,8 @@ Wings is a web server management tool designed to offer a streamlined and effici
 - Develop Mode 1: Classic node management.
 - Develop Mode 2: Proxy mode with automatic DNS creation.
 - Develop Mode 3: Combined mode (Mode 1 + Mode 2).
-
+- Custom docker
+- dns server management
 ## Getting Started
 
 ### Prerequisites
