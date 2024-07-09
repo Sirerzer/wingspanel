@@ -6,10 +6,13 @@ import re
 import os
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
+from flask import Flask, flash, request, redirect, url_for
+import uuid
 import io
 import tarfile
 from functools import wraps
 from yml import token
+import proxy
 
 class DockerFileManager:
     def __init__(self):
@@ -20,7 +23,19 @@ class DockerFileManager:
         cmd = f"ls -a {file_path}"
         files = container.exec_run(cmd).output.decode().split()
         return files
-
+    def create_file(self, container_id, file_path,filename):
+        container = self.clienta.containers.get(container_id)
+        cmd = f"touch {file_path}/{filename}"
+        files = container.exec_run(cmd).output.decode().split()
+        return files
+    
+    def mkdir(self, container_id, file_path,repertoriename):
+        container = self.clienta.containers.get(container_id)
+        cmd = f"mkdir {file_path}/{repertoriename}"
+        files = container.exec_run(cmd).output.decode().split()
+        return files
+    
+    
     def read_file(self, container_id, file_path):
         container = self.clienta.containers.get(container_id)
         try:
@@ -56,8 +71,33 @@ class DockerFileManager:
         except Exception as e:
             print(f"Error while writing file: {e}")
             return False
+    def upload_file(self, container_id, file_path, file_stream):
+        container = self.clienta.containers.get(container_id)
 
+        # Create an in-memory tar archive with the uploaded file
+        tar_stream = io.BytesIO()
+        with tarfile.open(fileobj=tar_stream, mode='w') as tar:
+            tarinfo = tarfile.TarInfo(name=os.path.basename(file_path))
+            tarinfo.size = len(file_stream.getbuffer())
+            tar.addfile(tarinfo, file_stream)
+
+        tar_stream.seek(0)
+
+        try:
+            # Ensure the directory exists
+            container.exec_run(f"mkdir -p {os.path.dirname(file_path)}")
+            # Put the archive in the container
+            container.put_archive(os.path.dirname(file_path), tar_stream)
+            return True
+        except Exception as e:
+            print(f"Error while uploading file: {e}")
+            return False
 app = Flask(__name__)
+UPLOAD_FOLDER = '/tmp'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','tar','gz'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = 'MOMOGHGFIqhqduihguiuiFGIUGHUIZETZGIUZEIUHYDFQUIHUIDSDHFUIDSHFIUHDQSIUHFUIHFIUHGVUIHBUIFHIUODHFIUDQHFIUDHFIUHDFIUDHGUIFDHIUDQUIGQSDIUQG'
 client = docker.from_env()
 docker_fm = DockerFileManager()
 def get_container_status(container_id):
@@ -70,7 +110,8 @@ CORS(app)
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
+
+        proxy.reload()
         if 'Authorization' in request.headers:
             token = request.headers['Authorization']
         
@@ -90,7 +131,126 @@ def handle_docker_error(e):
         return jsonify({'message': 'Docker API error', 'error': str(e)}), 500
     else:
         return jsonify({'message': 'Error', 'error': str(e)}), 500
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload/<container_id>/<path:file_path>', methods=['GET', 'POST'])
+def uploada_file(container_id,file_path):
+    file_uuid = uuid.uuid4()
+    file_uuid = str(file_uuid)
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        
+        if file:
+            
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
+            try:
+                container = client.containers.get(container_id)
+                source_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                os.system(f'tar -cvf {file_uuid} {source_file}')
+                destination_path = f"/{filename}"
+                
+                with open(file_uuid, 'rb') as file_data:
+                    container.put_archive(f'/var/www/html/{file_path}', file_data.read())
+                container.exec_run(f"cp /var/www/html/tmp/* /var/www/html/{file_path}")
+                container.exec_run(f"rm /var/www/html/tmp/*")
+                os.system(f'rm -rf {source_file}')
+                os.system(f'rm -rf {file_uuid}')
+
+                return 'File uploaded successfully', 200
+            
+            except docker.errors.NotFound as e:
+                print(f"Container '{container_id}' not found")
+                os.system(f'rm -rf {source_file}')
+                os.system(f'rm -rf {file_uuid}')
+                return redirect(request.url)
+            
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+                os.system(f'rm -rf {source_file}')
+                os.system(f'rm -rf {file_uuid}')
+                return redirect(request.url)
     
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+@app.route('/upload/<container_id>/', methods=['GET', 'POST'])
+def upload_file_root(container_id):
+    file_uuid = uuid.uuid4()
+    file_uuid = str(file_uuid)
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        
+        if file:
+            
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
+            try:
+                container = client.containers.get(container_id)
+                source_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                os.system(f'tar -cvf {file_uuid} {source_file}')
+                destination_path = f"/{filename}"
+                
+                with open(file_uuid, 'rb') as file_data:
+                    container.put_archive('/var/www/html/', file_data.read())
+                container.exec_run(f"cp -rf /var/www/html/tmp/* /var/www/html/")
+                container.exec_run(f"rm -rf /var/www/html/tmp/*")
+                os.system(f'rm -rf {source_file}')
+                os.system(f'rm -rf {file_uuid}')
+
+                return 'File uploaded successfully', 200
+            
+            except docker.errors.NotFound as e:
+                print(f"Container '{container_id}' not found")
+                os.system(f'rm -rf {source_file}')
+                os.system(f'rm -rf {file_uuid}')
+                return redirect(request.url)
+            
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+                os.system(f'rm -rf {source_file}')
+                os.system(f'rm -rf {file_uuid}')
+                return redirect(request.url)
+    
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+
+
+
 @app.route('/files/<container_id>/<path:file_path>', methods=['GET'])
 
 def navigate_file(container_id, file_path):
@@ -108,6 +268,70 @@ def navigate_file(container_id, file_path):
 
         # If content is None or it's a regular file, return the content
         return content
+    
+    except Exception as e:
+        # Handle exceptions appropriately (log or return an error response)
+        print(f"Error reading file: {e}")
+        return f"Error reading file: {e}", 500
+
+
+
+# Modifier la fonction upload_file
+import docker
+
+@app.route('/files/upload/<container_id>/<path:file_path>', methods=['POST'])
+@token_required
+def upload_file(container_id, file_path):
+    if 'file' not in request.files:
+        return jsonify({'message': 'No file part in the request'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'message': 'No file selected for uploading'}), 400
+
+    if file:
+        try:
+            # Create a Docker client
+            client = docker.from_env()
+
+            # Get the container by its UUID
+            container = client.containers.get(container_id)
+
+            # Create a temporary file to store the uploaded file
+            tmp_file = tempfile.NamedTemporaryFile()
+            file.save(tmp_file)
+
+            # Copy the file to the container
+            container.put_archive(file_path, tmp_file.read())
+
+            # Remove the temporary file
+            tmp_file.close()
+
+            return jsonify({'message': f'File successfully uploaded to {file_path}'}), 201
+        except docker.errors.NotFound:
+            return jsonify({'message': 'Container not found'}), 404
+        except docker.errors.APIError as e:
+            return jsonify({'message': 'Error uploading file', 'error': str(e)}), 500
+        except Exception as e:
+            return jsonify({'message': 'Error uploading file', 'error': str(e)}), 500
+
+@app.route('/files/<container_id>/<path:file_path>', methods=['POST'])
+
+def mkdir(container_id, file_path):
+    
+    try:
+        
+        # Check if the content indicates that the file is not a regular file
+        data = request.get_json()  # Récupérer les données JSON
+        if data is None:
+            return "Invalid data: JSON required", 400
+        
+        reponse = data.get('content')
+        if reponse is None:
+            return "Invalid data: 'content' is required", 400
+        content = docker_fm.mkdir(container_id, file_path,reponse)
+        # If content is None or it's a regular file, return the content
+        return 200
     
     except Exception as e:
         # Handle exceptions appropriately (log or return an error response)
@@ -152,7 +376,7 @@ def create_server():
     image_name = request.args.get('image', default='nginx', type=str)
     port = request.args.get('port', type=int)
     intport = request.args.get('intport', type=int,default=80)
-
+    ndd = request.args.get('ndd',type=str,default=None)
     host_ip = request.args.get('host_ip', default='0.0.0.0', type=str)  # Ajout du paramètre host_ip
     try:
         # Create and start the container
@@ -166,7 +390,7 @@ def create_server():
         )
 
     
-        db.runsqlaction("INSERT INTO server (port, image, uuid, status) VALUES (?, ?, ?, ?)", (port, image_name, container.id, get_container_status(container.id)))
+        db.runsqlaction("INSERT INTO server (port, image, uuid, status,ndd) VALUES (?, ?, ?, ?,?)", (port, image_name, container.id, get_container_status(container.id),ndd))
         
         return jsonify({
             'message': 'Server created successfully',

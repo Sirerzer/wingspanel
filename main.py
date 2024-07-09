@@ -13,10 +13,13 @@ try:
    import yml
    import listen
    import os
+   import proxy
 except:
    os.system("pip install docker pyyaml pytest pytest-cov flask flask-cors")
 
 if(yml.port == ''):
    print("Programe finish")
+if yml.mode == 2 or yml.mode == 3:
+   print("") 
 else:
    listen.run(debug=yml.debug,port=yml.port)
