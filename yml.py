@@ -14,6 +14,7 @@ try:
             debug = config["debug"]
             token = config["token"]
             remote = config["remote"]
+            mode = config['mode']
             # Lecture des personnes une à une
             current_time = datetime.now().strftime('%H:%M:%S')
             print(f"[{current_time}] finish to loading the config")

@@ -7,7 +7,7 @@ current_time = datetime.now().strftime('%H:%M:%S')
 print(f'[{current_time}] Connection to the database successful')
 
 cur = con.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS server (port,image,uuid,status)")
+cur.execute("CREATE TABLE IF NOT EXISTS server (port,image,uuid,status,ndd)")
 cur.close()
 con.close()
 def runsqlaction(action, params=()):
