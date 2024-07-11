@@ -13,7 +13,7 @@ Wings is a web server management tool designed to offer a streamlined and effici
   - **Mode 2**: Proxy mode with domain name delegation (auto-creation with DNS access).
   - **Mode 3**: Combination of Mode 1 and Mode 2.
 - **Create web serveur**
-- **Custom docker**
+- **~~Custom docker~~**
   - **Uptime kuma**
   - **Custom by user**
 ## To-Do List
