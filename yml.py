@@ -5,7 +5,7 @@ from datetime import *
 current_time = datetime.now().strftime('%H:%M:%S')
 print(f"[{current_time}] load the config")
 try:
-    with open("config.yml", 'r') as stream:
+    with open("/etc/webpanel/config.yml", 'r') as stream:
         try:
             # Chargement du fichiers
             config = yaml.load(stream,Loader=yaml.FullLoader)
@@ -29,7 +29,11 @@ try:
             debug = ''
             token = ''
             remote = ''
-            exit()
+            mode = ''
+            ssl = ''
+            certfile =''
+            keyfile = ''
+            
 except FileNotFoundError:
     print('''
               -------------------------------------------------------------------------------
@@ -37,11 +41,14 @@ except FileNotFoundError:
               ou copier coller le contenue
               -------------------------------------------------------------------------------
     ''')
-    exit()
     port = ''
     debug = ''
     token = ''
     remote = ''
+    mode = ''
+    ssl = ''
+    certfile =''
+    keyfile = ''
 def test_yml():
     current_time = datetime.now().strftime('%H:%M:%S')
     print(f"[{current_time}] load the config")
@@ -70,8 +77,11 @@ def test_yml():
                   ou copier coller le contenue
                   -------------------------------------------------------------------------------
         ''')
-        exit()
         port = ''
         debug = ''
-        ACCESS_TOKEN = ''
+        token = ''
         remote = ''
+        mode = ''
+        ssl = ''
+        certfile =''
+        keyfile = ''
