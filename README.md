@@ -1,7 +1,7 @@
 
 # Wings
 
-[![Python package](https://github.com/Sirerzer/wings/actions/workflows/python-app.yml/badge.svg?branch=main)](https://github.com/Sirerzer/wings/actions/workflows/python-app.yml)
+[![Python package](https://github.com/Sirerzer/wingspanel/actions/workflows/python-app.yml/badge.svg)](https://github.com/Sirerzer/wingspanel/actions/workflows/python-app.yml)
 
 Wings is a web server management tool designed to offer a streamlined and efficient approach to server management through various operational modes and proxy nodes.
 
