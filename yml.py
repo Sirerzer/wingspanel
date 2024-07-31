@@ -15,6 +15,10 @@ try:
             token = config["token"]
             remote = config["remote"]
             mode = config['mode']
+            ssl = config['ssl']
+            certfile = config['certfile']
+            keyfile = config['keyfile']
+
             # Lecture des personnes une à une
             current_time = datetime.now().strftime('%H:%M:%S')
             print(f"[{current_time}] finish to loading the config")
@@ -25,6 +29,7 @@ try:
             debug = ''
             token = ''
             remote = ''
+            exit()
 except FileNotFoundError:
     print('''
               -------------------------------------------------------------------------------
@@ -32,6 +37,7 @@ except FileNotFoundError:
               ou copier coller le contenue
               -------------------------------------------------------------------------------
     ''')
+    exit()
     port = ''
     debug = ''
     token = ''
@@ -55,6 +61,8 @@ def test_yml():
             except yaml.YAMLError as ex:
                 print("YAML FILE HAS SYNTAX ERROR :")
                 print(ex)
+                exit()
+
     except FileNotFoundError:
         print('''
                   -------------------------------------------------------------------------------
@@ -62,6 +70,7 @@ def test_yml():
                   ou copier coller le contenue
                   -------------------------------------------------------------------------------
         ''')
+        exit()
         port = ''
         debug = ''
         ACCESS_TOKEN = ''
